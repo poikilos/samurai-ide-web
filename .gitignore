@@ -1,8 +1,84 @@
-*.pyc
+# updated based on <https://djangowaves.com/tips-tricks/gitignore-for-a-django-project/>:
+# Django #
+media
+
+# Backup files #
+*.bak
+
+# File-based project format
+*.iws
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# updated based on <https://github.com/github/gitignore/blob/main/Python.gitignore>:
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+*$py.class
+__pycache__
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+# *.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+## site-specific files
 *.nja
 *.db
 .DS_Store
-local_settings.py
 local_urls.py
 media/plugin_files/
 src/
@@ -11,3 +87,16 @@ website/ninja_web/ninja_ide.db
 ninja_ide.db
 ninjaweb
 website/ninja_web/media/plugin_files/
+
+### files generated during install
+ninja_ide.db
+ninjaweb
+website/ninja_web/media/plugin_files/
+mezzaninja/settings/__init__.pyc
+mezzaninja/settings/__pycache__/__init__.cpython-37.pyc
+mezzaninja/settings/active.py
+mezzaninja/settings/base.pyc
+version/bin/python
+version/bin/python3
+version/lib64
+version/pyvenv.cfg
