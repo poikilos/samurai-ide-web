@@ -3,6 +3,10 @@
 ## Website for Samurai-IDE
 The 3rd version of the website is developed alongside Samurai-IDE 3.
 
+<p align="center">
+  <img alt="Samurai-IDE logo" src="website/ninja_web/common/static/common/img/ninja-big.png">
+</p>
+
 ### User-submitted content
 
 Any help is welcome for creating new issues and taking care of free issues. You'll understand that we cannot let you add a dancing Jesus or a Mr X photo to our awesome samurai site for the simple reason that **we** are the ones that want to add that kind of staff to the site.
