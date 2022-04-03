@@ -25,6 +25,12 @@ If you really really REALLY want to help us, just get to our site (https://samur
     pwd >> $WORKON_HOME/samuraiweb/.project
 
     # install all requirements
+    sudo apt-get install gcc libpq-dev -y
+    sudo apt-get install python-dev  python-pip -y
+    sudo apt-get install python3-dev python3-pip python3-venv python3-wheel -y
+    # ^ See <https://stackoverflow.com/a/59596814/4541104> (avoid
+    #   error: "The virtual environment was not created successfully because ensurepip is not
+    #   available")
     pip install -r requirements/dev.txt
 
     # prepare it
