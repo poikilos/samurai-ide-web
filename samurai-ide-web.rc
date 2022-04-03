@@ -1,0 +1,26 @@
+webName="samurai-ide"
+REPO_NAME="samurai-ide-web"
+envName="$REPO_NAME"
+websDst="/var/www"
+REPO_USER=poikilos
+REPO_URL="https://github.com/$REPO_USER/$REPO_NAME"
+myPath="`realpath $0`"
+me="samurai-ide-web/install.sh"
+if [ "@$WEB_USER" = "@" ]; then
+    WEB_USER="samurai-ide"
+    echo "* WEB_USER was not set so it has reverted to the default: $WEB_USER"
+fi
+WEB_USER_GROUP=`id -Gn $WEB_USER`
+if [ "@$WEB_USER_HOME" = "@" ]; then
+    WEB_USER_HOME="$websDst/$webName"
+    echo "* WEB_USER_HOME was not set so it has reverted to the default: $WEB_USER_HOME"
+fi
+VENVS_DIR="$WEB_USER_HOME/.virtualenvs"
+VENV_DIR="$VENVS_DIR/$envName"
+# deluser $WEB_USER
+REPO_PATH="$WEB_USER_HOME/$REPO_NAME"
+PYTHON3="$VENV_DIR/bin/python"
+serverStarter="$WEB_USER_HOME/ninja-ide-web-start"
+serverService="$WEB_USER_HOME/ninja-ide-web.service"
+Documentation="https://github.com/poikilos/samurai-ide-web"
+Description="Samurai-IDE Website on Python DJANGO"
