@@ -87,3 +87,16 @@ website/ninja_web/ninja_ide.db
 ninja_ide.db
 ninjaweb
 website/ninja_web/media/plugin_files/
+
+### files generated during install
+ninja_ide.db
+ninjaweb
+website/ninja_web/media/plugin_files/
+mezzaninja/settings/__init__.pyc
+mezzaninja/settings/__pycache__/__init__.cpython-37.pyc
+mezzaninja/settings/active.py
+mezzaninja/settings/base.pyc
+version/bin/python
+version/bin/python3
+version/lib64
+version/pyvenv.cfg
