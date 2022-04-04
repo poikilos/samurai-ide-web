@@ -61,13 +61,13 @@ def scheme_submit(request):
             new_scheme = form.save(commit=False)
             new_scheme.user = request.user
             new_scheme.save()
-            messages.info(request, u'Scheme submitted correctly little dragon.')
+            messages.info(request, 'Scheme submitted correctly little dragon.')
 
             return redirect('schemes')
         else:
             messages.error(
                     request,
-                    u'Something went wrong in your submit. Please, check it.')
+                    'Something went wrong in your submit. Please, check it.')
 
     context['form'] = form
     return render_response(request, 'scheme-submit.html', context)
@@ -79,7 +79,7 @@ def get_scheme(request, scheme_id=None):
     try:
         context['scheme'] = Scheme.objects.get(pk=scheme_id)
     except Scheme.DoesNotExist:
-        messages.error(request, u"That scheme doesn't exist!")
+        messages.error(request, "That scheme doesn't exist!")
         redirect_url = reverse('schemes')
         return redirect(redirect_url)
 
@@ -104,15 +104,15 @@ def scheme_edit(request, scheme_id):
 
     if request.method == 'POST':
         if form.is_valid():
-            messages.info(request, u'scheme updated correctly little dragon!')
+            messages.info(request, 'scheme updated correctly little dragon!')
 
             redirect_url = reverse('scheme_detail', args=(scheme.id,))
             return redirect(redirect_url)
         else:
             messages.error(
                     request,
-                    u'Something went wrong editing your Scheme.'\
-                    u' Please, check it.')
+                    'Something went wrong editing your Scheme.'\
+                    ' Please, check it.')
 
     context['form'] = form
     return render_response(request, 'scheme-submit.html', context)

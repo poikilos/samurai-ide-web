@@ -17,7 +17,7 @@ class Scheme(models.Model):
     """
 
     user = models.ForeignKey(User, blank=True, null=True)
-    name = models.CharField(max_length="100", verbose_name=(u'scheme name'))
+    name = models.CharField(max_length="100", verbose_name=('scheme name'))
     upload_date = models.DateField(default=date.today)
     scheme_file = models.FileField(upload_to='schemes/')
 
@@ -35,7 +35,7 @@ class Scheme(models.Model):
         return colors
 
     def __unicode__(self):
-        return u'%s' % self.name
+        return '%s' % self.name
 
     def set_tags(self, tags):
         Tag.objects.update_tags(self, tags)

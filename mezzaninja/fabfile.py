@@ -34,7 +34,7 @@ def backup_existing_repo():
     #         # TODO: if there a ninja-ide-web, backup it. Use a timestamp in name
     #     if output.failed:
     #         abort(output)
-    print "backup_existing_repo: TO BE DONE"
+    print("backup_existing_repo: TO BE DONE")
 
 
 def clone():
@@ -52,14 +52,14 @@ def commit():
     """
     On local machine, commit the new changes on branch master
     """
-    print "commit: TO BE DONE"
+    print("commit: TO BE DONE")
 
 
 def push():
     """
     On local machine, push the new commits to origin master
     """
-    print "push: TO BE DONE"
+    print("push: TO BE DONE")
 
 
 def backup():
@@ -72,7 +72,7 @@ def backup():
     #         # backup it use a timestamp in name
     #     if output.failed:
     #         abort(output)
-    print "backup: TO BE DONE"
+    print("backup: TO BE DONE")
 
 
 def pull():
@@ -176,7 +176,7 @@ def initialize():
 
 
 def prompt_backup():
-    prompt = raw_input("\n>> Backup existing data? WARNING: NOT IMPLEMENTED YET!!\n(yes/no)\n>")
+    prompt = input("\n>> Backup existing data? WARNING: NOT IMPLEMENTED YET!!\n(yes/no)\n>")
     if prompt.lower() == "yes":
         print("\n* Starting backup.")
         backup()

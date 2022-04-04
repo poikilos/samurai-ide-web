@@ -2,7 +2,7 @@
 
 #TODO: funtion to return (name, url) of last version
 #from somewhere import latest_version
-import settings
+from . import settings
 
 
 def use_lessjs(request):
@@ -41,7 +41,7 @@ def user_info(request):
             # last version available for download for this user
             #user_info['user_last_version'] = latest_version(user_os)
 
-    except Exception, e:
-        print u"Exception in context_processors.user_info: %s" % e
+    except Exception as e:
+        print("Exception in context_processors.user_info: %s" % e)
 
     return user_info

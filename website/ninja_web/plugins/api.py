@@ -40,8 +40,8 @@ def get_plugins_dict(request, query=None):
     for plugin in plugins_list:
         plugin_data = {}
         plugin_data['name'] = plugin.name
-        plugin_data['description'] = SafeString(u'%s') % plugin.description
-        plugin_data['version'] = plugin.version or u'N/A'
+        plugin_data['description'] = SafeString('%s') % plugin.description
+        plugin_data['version'] = plugin.version or 'N/A'
         plugin_data['download'] = request.build_absolute_uri(plugin.zip_file.url)
         plugin_data['tags'] = plugin.tags.split() or []
         plugin_data['rate'] = '%.2f' % plugin.rate

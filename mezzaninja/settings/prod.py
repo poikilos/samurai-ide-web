@@ -2,7 +2,7 @@
 # PRODUCTION SETTINGS #
 #######################
 
-from base import *
+from .base import *
 
 
 DEBUG = False

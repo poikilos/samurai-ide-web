@@ -69,13 +69,13 @@ def plugin_submit(request):
             new_plugin.user = request.user
             new_plugin.save()
             messages.info(request,
-                          u'Plugin submitted correctly little dragon.')
+                          'Plugin submitted correctly little dragon.')
 
             return redirect('plugin_list')
         else:
             messages.error(
                 request,
-                u'Something went wrong in your submit. Please, check it.')
+                'Something went wrong in your submit. Please, check it.')
 
     context['form'] = form
     return render_response(request, 'plugin-submit.html', context)
@@ -112,17 +112,17 @@ def rate_plugin(request):
             # mensajito de error (el de ya votaste este plugin).
             new_vote.save()
             context['ok'] = True
-            context['msg'] = u"Thanks for your vote!"
+            context['msg'] = "Thanks for your vote!"
 
         except IntegrityError:
             #IntegrityError raises when tried to save violating
             # the unique_together Plugin meta.
             context['ok'] = False
-            context['msg'] = u"You can't vote the same plugin twice!"
+            context['msg'] = "You can't vote the same plugin twice!"
 
-        except Exception, e:
+        except Exception as e:
             context['ok'] = False
-            context['msg'] = u"%s" % e
+            context['msg'] = "%s" % e
 
         else:
             # updated values for the voted plugin
@@ -149,7 +149,7 @@ class PluginDetailView(DetailView):
             self.model.objects.get(pk=kwargs['plugin_id'])
             return super(PluginDetailView, self).get(request, **kwargs)
         except self.model.DoesNotExist:
-            messages.info(request, u'The plugin you look for no longer exists '
+            messages.info(request, 'The plugin you look for no longer exists '
                                    'dude. If you are a bot, please, GTFOOH.')
             return redirect(reverse('plugin_list'))
 
@@ -169,14 +169,14 @@ class PluginEditView(UpdateView):
 
     def form_valid(self, form):
         plugin = form.save()
-        messages.info(self.request, u'Plugin {} updated correctly little '
+        messages.info(self.request, 'Plugin {} updated correctly little '
                                     'dragon!'.format(plugin))
         success_url = reverse('user_detail', args=(self.request.user.username))
 
     def form_not_valid(self, form):
         messages.error(
             self.request,
-            u'Something went wrong in your submit. Please, check it.')
+            'Something went wrong in your submit. Please, check it.')
 
 
 # @login_required
