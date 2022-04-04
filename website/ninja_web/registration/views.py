@@ -84,7 +84,7 @@ def activate(request, backend,
     if extra_context is None:
         extra_context = {}
     context = RequestContext(request)
-    for key, value in extra_context.items():
+    for key, value in list(extra_context.items()):
         context[key] = callable(value) and value() or value
 
     return render_to_response(template_name,
@@ -196,7 +196,7 @@ def register(request, backend, success_url=None, form_class=None,
     if extra_context is None:
         extra_context = {}
     context = RequestContext(request)
-    for key, value in extra_context.items():
+    for key, value in list(extra_context.items()):
         context[key] = callable(value) and value() or value
 
     return render_to_response(template_name,

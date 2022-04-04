@@ -42,7 +42,7 @@ def tagged_object_list(request, queryset_or_model=None, tag=None,
     if tag_instance is None:
         raise Http404(_('No Tag found matching "%s".') % tag)
     queryset = TaggedItem.objects.get_by_model(queryset_or_model, tag_instance)
-    if not kwargs.has_key('extra_context'):
+    if 'extra_context' not in kwargs:
         kwargs['extra_context'] = {}
     kwargs['extra_context']['tag'] = tag_instance
     if related_tags:

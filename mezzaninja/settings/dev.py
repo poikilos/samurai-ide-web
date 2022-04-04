@@ -6,7 +6,7 @@
 # ignored in your version control system allowing for settings to be
 # defined per machine.
 
-from base import *
+from .base import *
 
 DEBUG = True
 LESS_DEBUG = True

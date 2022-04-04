@@ -18,12 +18,12 @@ class Plugin(models.Model):
     """
     user = models.ForeignKey(User, blank=True, null=True)
 
-    name = models.CharField(max_length="100", verbose_name=(u'Plugin name'))
+    name = models.CharField(max_length="100", verbose_name=('Plugin name'))
     short_description = models.CharField(max_length=100,
-                                         verbose_name=u'Short Description')
-    description = models.TextField(verbose_name=u'Description')
+                                         verbose_name='Short Description')
+    description = models.TextField(verbose_name='Description')
     version = models.CharField(max_length="32",
-                               verbose_name=(u'Plugin version'))
+                               verbose_name=('Plugin version'))
     upload_date = models.DateField(default=date.today)
     url = models.URLField(max_length=200, blank=True)
 
@@ -32,7 +32,7 @@ class Plugin(models.Model):
     tags = TagField()
 
     def __unicode__(self):
-        return u'Plugin name: %s | Uploaded by: %s' % \
+        return 'Plugin name: %s | Uploaded by: %s' % \
             (self.name, self.user.username)
 
     def set_tags(self, tags):
@@ -76,5 +76,5 @@ class Vote(models.Model):
         unique_together = ('plugin', 'user',)
 
     def __unicode__(self):
-        return u'Vote for plugin: %s | Voter: %s | Rate: %d.' % \
+        return 'Vote for plugin: %s | Voter: %s | Rate: %d.' % \
             (self.plugin, self.user.username, self.rate)

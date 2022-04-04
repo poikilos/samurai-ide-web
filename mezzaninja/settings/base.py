@@ -157,7 +157,7 @@ STATICFILES_FINDERS = (
 
 # The numeric mode to set newly-uploaded files to. The value should be
 # a mode you'd pass directly to os.chmod.
-FILE_UPLOAD_PERMISSIONS = 0644
+FILE_UPLOAD_PERMISSIONS = 0o644
 
 
 #############
@@ -400,7 +400,7 @@ else:
 def run_checkers(global_settings):
     LESS_EXECUTABLE = global_settings.get("LESS_EXECUTABLE", "")
     if LESS_EXECUTABLE == "":
-        raise ImproperlyConfigured(u"Please define explicitly LESS_EXECUTABLE")
+        raise ImproperlyConfigured("Please define explicitly LESS_EXECUTABLE")
 
     if (not os.path.isfile(LESS_EXECUTABLE)) or  (not os.access(LESS_EXECUTABLE, os.X_OK)):
-        raise ImproperlyConfigured(u"Less binary does not exist or is not executable")
+        raise ImproperlyConfigured("Less binary does not exist or is not executable")

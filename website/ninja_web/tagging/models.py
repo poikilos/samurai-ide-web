@@ -142,7 +142,7 @@ class TagManager(models.Manager):
         if filters is None: filters = {}
 
         queryset = model._default_manager.filter()
-        for f in filters.items():
+        for f in list(filters.items()):
             queryset.query.add_filter(f)
         usage = self.usage_for_queryset(queryset, counts, min_count)
 
@@ -487,4 +487,4 @@ class TaggedItem(models.Model):
         verbose_name_plural = _('tagged items')
 
     def __unicode__(self):
-        return u'%s [%s]' % (self.object, self.tag)
+        return '%s [%s]' % (self.object, self.tag)

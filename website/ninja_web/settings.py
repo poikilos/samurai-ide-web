@@ -14,8 +14,8 @@ TEMPLATE_DEBUG = DEBUG
 USE_LESSJS = False
 
 ADMINS = (
-    (u'Diego Sarmentero', 'dojo@ninja-ide.org'),
-    (u'Pedro Mourelle', 'pedro@ninja-ide.org'),
+    ('Diego Sarmentero', 'dojo@ninja-ide.org'),
+    ('Pedro Mourelle', 'pedro@ninja-ide.org'),
 )
 
 MANAGERS = ADMINS

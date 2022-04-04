@@ -9,10 +9,10 @@ from django.contrib import admin
 admin.autodiscover()
 
 from articles.models import Article
-from registration.forms import RegistrationFormUniqueEmail
+from .registration.forms import RegistrationFormUniqueEmail
 
-from common.views import UserDetailView
-from plugins import views as plugin_views
+from .common.views import UserDetailView
+from .plugins import views as plugin_views
 
 admin_regex = r'^admin/'
 

@@ -137,7 +137,7 @@ def do_tag_cloud_for_model(parser, token):
     """
     bits = token.contents.split()
     len_bits = len(bits)
-    if len_bits != 4 and len_bits not in range(6, 9):
+    if len_bits != 4 and len_bits not in list(range(6, 9)):
         raise TemplateSyntaxError(_('%s tag requires either three or between five and seven arguments') % bits[0])
     if bits[2] != 'as':
         raise TemplateSyntaxError(_("second argument to %s tag must be 'as'") % bits[0])
