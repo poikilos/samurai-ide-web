@@ -1,13 +1,15 @@
 webName="samurai"
 REPO_NAME="samurai-ide-web"
 Description="Samurai-IDE Website on Python DJANGO"
-me="$REPO_NAME/install.sh"
 SERVICE_NAME="$REPO_NAME"
+me="samurai-ide-web.rc"
 envName="$REPO_NAME"
 #websDst="/var/www"
 REPO_USER=poikilos
 REPO_URL="https://github.com/$REPO_USER/$REPO_NAME"
 myPath="`realpath $0`"
+#MORE_SETTINGS="$HOME/.config/samurai-ide-web"
+#mkdir -p "$MORE_SETTINGS"
 Documentation="https://github.com/$REPO_USER/$REPO_NAME"
 
 if [ "@$SYS_PYTHON" = "@" ]; then
@@ -15,15 +17,32 @@ if [ "@$SYS_PYTHON" = "@" ]; then
     echo "* SYS_PYTHON was not set so it has reverted to the default: $SYS_PYTHON"
 fi
 if [ "@$PYTHON_MAJOR_VERSION" = "@" ]; then
-    if [ "$SYS_PYTHON" = "python2" ]; then
-        PYTHON_MAJOR_VERSION=2
-        echo "* PYTHON_MAJOR_VERSION was not set so it defaulted to the detected: $PYTHON_MAJOR_VERSION"
-    else
-        PYTHON_MAJOR_VERSION=3
-        echo "* PYTHON_MAJOR_VERSION was not set so it defaulted to: $PYTHON_MAJOR_VERSION"
-    fi
+    # if [ "$SYS_PYTHON" = "python2" ]; then
+    #     PYTHON_MAJOR_VERSION=2
+    #     echo "* PYTHON_MAJOR_VERSION was not set so it defaulted to the detected: $PYTHON_MAJOR_VERSION"
+    # else
+    #     PYTHON_MAJOR_VERSION=3
+    #     echo "* PYTHON_MAJOR_VERSION was not set so it defaulted to: $PYTHON_MAJOR_VERSION"
+    # fi
+    PYTHON_MAJOR_VERSION=`$SYS_PYTHON -c 'from __future__ import print_function; import sys; print(sys.version_info.major)'`
 fi
 SYS_PYTHON_PATH="`which $SYS_PYTHON`"
+
+if [ "$EUID" -eq 0 ]; then
+    echo "WARNING: Running as root is not recommended."
+    echo "Press Ctrl+C within 5 seconds or $me will install as root!"
+    echo "5..."
+    sleep 1
+    echo "4..."
+    sleep 1
+    echo "3..."
+    sleep 1
+    echo "2..."
+    sleep 1
+    echo "1..."
+    sleep 1
+fi
+
 # if [ "@$WWW_USER" = "@" ]; then
 #     WWW_USER="samurai"
 #     echo "* WWW_USER was not set so it has reverted to the default: $WWW_USER"

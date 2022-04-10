@@ -17,11 +17,32 @@ else
     echo "* using git as the install source"
 fi
 
-. samurai-ide-web-as-www_user.rc
+. samurai-ide-web.rc
 if [ $? -ne 0 ]; then
     echo "Error: samurai-ide-web.rc failed to load."
     exit 1
 fi
+me="$REPO_NAME/install.sh"
+
+# if [ ! -f "`command -v less`" ]; then
+# ^ NOT RELIABLE (less has a different meaning on linux)!
+printf "* finding a node package manager..."
+if [ -f "`command -v yarn`" ]; then
+    NPM="yarn"
+    NPM_INSTALL="$NPM add"
+elif [ -f "`command -v yarnpkg`" ]; then
+    NPM="yarnpkg"
+    NPM_INSTALL="$NPM add"
+elif [ -f "`command -v npm`" ]; then
+    NPM="npm"
+    NPM_INSTALL="$NPM install"
+else
+    echo "Error: less is required, but there is no npm nor yarn nor yarnpkg. Run deps.sh as root first."
+    exit 1
+fi
+echo "OK (using $NPM)"
+# fi
+
 
 # if [ $UID -ne 0 ]; then
 #     echo "This script must run as root or WWW_USER."
@@ -37,6 +58,7 @@ if [ ! -d "$REPO_PATH" ]; then
     else
         echo "* installing $INSTALL_SRC to $REPO_PATH..."
         rsync -rt $INSTALL_SRC/ "$REPO_PATH"
+        # ^ ALSO happens below if UPDATE!
     fi
     if [ $? -ne 0 ]; then
         echo "  * 'git clone $REPO_URL \"$REPO_PATH\"' failed."
@@ -48,6 +70,8 @@ else
     echo "* using existing $REPO_PATH"
     UPDATE=true
 fi
+
+
 printf "'cd $REPO_PATH'..."
 cd $REPO_PATH
 code=$?
@@ -58,27 +82,31 @@ else
     exit $code
 fi
 # NOTE: Do not set PYTHON_MAJOR_VERSION directly. Instead, set SYS_PYTHON (the RC file above will set PYTHON_MAJOR_VERSION).
-if [ "$PYTHON_MAJOR_VERSION" = "2" ]; then
-    # echo "* WARNING: Switching to develop-python2 branch since PYTHON_MAJOR_VERSION=2"
-    # git switch master-python2
-    # ^ doesn't work on older versions of git
-    #   So see
-    #   <https://www.freecodecamp.org/news/git-checkout-remote-branch-tutorial/>:
-    git fetch origin
+#if [ "$PYTHON_MAJOR_VERSION" = "2" ]; then
+    #echo "* WARNING: Switching to develop-python2 branch since PYTHON_MAJOR_VERSION=2"
 
-    # git checkout -b develop-python2 origin/develop-python2
-    # ^ fails to run: See
-    #   [develop-python2 branch fails to run
-    #   #6](https://github.com/poikilos/samurai-ide-web/issues/6)
+    ## git switch master-python2
+    ## ^ doesn't work on older versions of git
+    ##   So see
+    ##   <https://www.freecodecamp.org/news/git-checkout-remote-branch-tutorial/>:
 
-    # git checkout -b master-python2 origin/master-python2
-fi
+    #git fetch origin
+
+    ## git checkout -b develop-python2 origin/develop-python2
+    ## ^ fails to run: See
+    ##   [develop-python2 branch fails to run
+    ##   #6](https://github.com/poikilos/samurai-ide-web/issues/6)
+
+    #git checkout -b master-python2 origin/master-python2
+
+#fi
 if [ "@$UPDATE" = "@true" ]; then
     if [ -z "$INSTALL_SRC" ]; then
         git pull --verbose
     else
         echo "* updating $REPO_PATH from $INSTALL_SRC DESTRUCTIVELY..."
         rsync -rt --delete $INSTALL_SRC/ "$REPO_PATH"
+        # ^ ALSO happens further up if not UPDATE!
         code=$?
         if [ $code -ne 0 ]; then echo "  FAILED"; exit $code; else echo "  OK"; fi
         #if [ $code -ne 0 ]; then
@@ -89,6 +117,37 @@ if [ "@$UPDATE" = "@true" ]; then
         #fi
     fi
 fi
+
+if [ -f "$REPO_PATH/yarn.lock" ]; then
+    printf "* removing misplaced \"$REPO_PATH/yarn.lock\"..."
+    rm "$REPO_PATH/yarn.lock"
+    if [ $? -ne 0 ]; then echo "FAILED"; exit 1; else echo "OK"; fi
+fi
+if [ -f "$REPO_PATH/package.json" ]; then
+    printf "* removing misplaced \"$REPO_PATH/package.json\"..."
+    rm "$REPO_PATH/package.json"
+    if [ $? -ne 0 ]; then echo "FAILED"; exit 1; else echo "OK"; fi
+fi
+if [ -d "$REPO_PATH/node_modules" ]; then
+    printf "* removing misplaced \"$REPO_PATH/node_modules\"..."
+    rm -rf "$REPO_PATH/node_modules"
+    if [ $? -ne 0 ]; then echo "FAILED"; exit 1; else echo "OK"; fi
+fi
+# ^ prevent forcing the node_modules dir to prevent the error:
+#      File "/home/owner/samurai-ide-web/mezzaninja/settings/base.py", line 407, in run_checkers
+#        "".format(LESS_EXECUTABLE))
+#    settings.base.ImproperlyConfigured: Less binary does not exist or is not executable: node_modules/less/bin/lessc"
+YARN_LEFTOVERS="`find $REPO_PATH -name '.yarn*'`"
+YARN_LEFTOVERS="$YARN_LEFTOVERS `find $REPO_PATH -name 'node_modules'`"
+YARN_LEFTOVERS="$YARN_LEFTOVERS `find $REPO_PATH -name 'package.json'`"
+YARN_LEFTOVERS="$YARN_LEFTOVERS `find $REPO_PATH -name 'yarn.lock'`"
+YARN_LEFTOVERS=`echo $YARN_LEFTOVERS | xargs`
+# ^ trim whitespace
+if [ ! -z "$YARN_LEFTOVERS" ]; then
+    echo "Error: no yarn leftovers should appear in \"$REPO_PATH\" but it contains: $YARN_LEFTOVERS"
+    exit 1
+fi
+
 # mkvirtualenv samuraiweb
 # ^ from ninja-ide-web readme, but not great
 
@@ -177,21 +236,26 @@ if [ $code -ne 0 ]; then
     exit $code
 fi
 
-echo "* detected python in environment: `which python`"
+echo "* python in path in environment: `which python`"
+echo "  * Python `python --version`"
+echo "* python detected in environment: $VENV_PYTHON"
+echo "  * Python `$VENV_PYTHON --version`"
 
+echo "* upgrading pip and wheel"
 $VENV_PYTHON -m pip install --upgrade pip wheel
 
 printf "* generating \"$VENV_DIR/.project\"..."
 pwd | tee $VENV_DIR/.project
 code=$?
 if [ $code -ne 0 ]; then echo "  FAILED"; exit $code; else echo "  OK"; fi
+echo "  * contents: `cat $VENV_DIR/.project`"
 printf "* installing requirements..."
 $VENV_PYTHON -m pip install -r requirements/dev.txt
 $VENV_PYTHON -m pip install nose
-print "* 'cd mezzaninja' (from `pwd`)..."
+printf "* 'cd mezzaninja' (from `pwd`)..."
 cd mezzaninja
 code=$?
-if [ $code -ne 0 ]; then echo "  FAILED"; echo "exit $code"; else echo "  OK"; fi
+if [ $code -ne 0 ]; then echo "  FAILED"; exit $code; else echo "  OK"; fi
 # add2virtualenv .
 # ^ requires virtualenvwrappr. Instead, do:
 SITE_PACKAGES=`$VENV_PYTHON -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"`
@@ -207,6 +271,7 @@ fi
 
 if [ "$PYTHON_MAJOR_VERSION" = "2" ]; then
     # pip install django_compressor==2.4
+    echo "* running 'pip install django-appconf==1.0.2' for Python 2..."
     pip install django-appconf==1.0.2
     # ^ for python2 as per <https://stackoverflow.com/a/60984631/4541104>
 fi
@@ -220,21 +285,45 @@ fi
 
 export DJANGO_SETTINGS_MODULE="mezzaninja.settings"
 # ln -s settings/dev.py settings/active.py  # FAILS due to relative path
-echo "* installing settings/dev.py as settings/active.py..."
-cp settings/dev.py settings/active.py
-echo "* migrating database..."
-#if [ ]; then
+echo "* installing `realpath settings/dev.py` as `pwd`/settings/active.py..."
+rm settings/active.py
+ln -s `realpath settings/dev.py` settings/active.py
+echo "* installing less in \"`pwd`\"..."
+# if [ ! -f "`command -v less`" ]; then
+# ^ NOT RELIABLE (less has a different meaning on linux)!
+    $NPM_INSTALL less
+    # ^ $NPM_INSTALL may be "npm install", "yarn add", etc
 #fi
-#npm install less
-#code=$?
-#if [ $code -ne 0 ]; then exit $code; fi
-export PATH="$PATH:node_modules/less/bin"
-$VENV_PYTHON ./manage.py syncdb --migrate
+code=$?
+if [ $code -ne 0 ]; then exit $code; fi
+LESS_BIN_DIR=node_modules/less/bin
+if [ -d "$LESS_BIN_DIR" ]; then
+    LESS_BIN_DIR=`realpath $LESS_BIN_DIR`
+    echo "* adding directory $LESS_BIN_DIR to path..."
+elif [ -d "../$LESS_BIN_DIR" ]; then
+    LESS_BIN_DIR=`realpath ../$LESS_BIN_DIR`
+    echo "* adding directory $LESS_BIN_DIR to path (from `pwd`/..)..."
+else
+    echo "Error: '$NPM_INSTALL less' did not result in a \"`pwd`/node_modules/less/bin\" nor ../$LESS_BIN_DIR directory."
+    exit 1
+fi
+MANAGE_PY=./manage.py
+TRY_MANAGE_PY="../website/ninja_web/manage.py"
+#if [ -f "$TRY_MANAGE_PY" ]; then
+#    echo "* using \"$TRY_MANAGE_PY\"..."
+#    MANAGE_PY="$TRY_MANAGE_PY"
+#else
+#    echo "* missing \"$TRY_MANAGE_PY\".."
+#    exit 1
+#fi
+export PATH="$PATH:$LESS_BIN_DIR"
+echo "* migrating database..."
+$VENV_PYTHON $MANAGE_PY syncdb  # --migrate
 code=$?
 if [ $code -ne 0 ]; then echo "  FAILED"; exit $code; else echo "  OK"; fi
 
-echo "* Running '$VENV_PYTHON ./manage.py runserver'..."
-$VENV_PYTHON ./manage.py runserver
+echo "* Running '$VENV_PYTHON $MANAGE_PY runserver' in `pwd`..."
+$VENV_PYTHON $MANAGE_PY runserver
 code=$?
 if [ $code -ne 0 ]; then echo "  FAILED"; exit $code; else echo "  OK"; fi
 echo
@@ -260,7 +349,7 @@ Type=simple
 User=$WWW_USER
 Group=$WEB_USER_GROUP
 WorkingDirectory=$REPO_PATH/mezzninja
-ExecStart=$VENV_PYTHON ./manage.py runserver
+ExecStart=$VENV_PYTHON $MANAGE_PY runserver
 KillMode=process
 Restart=on-failure
 PrivateTmp=true

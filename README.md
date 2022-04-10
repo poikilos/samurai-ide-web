@@ -47,9 +47,11 @@ If you really really REALLY want to help us, just get to our site (https://samur
     cd mezzaninja
     add2virtualenv .
     export DJANGO_SETTINGS_MODULE="mezzaninja.settings"
-    # ln -s settings/dev.py settings/active.py
-    cp settings/dev.py settings/active.py
-    ./manage.py syncdb --migrate
+    ln -s `realpath settings/dev.py` settings/active.py
+    # cp settings/dev.py settings/active.py
+    # ./manage.py syncdb --migrate
+    # ^ fails (no such option --migrate) though was in ninja-ide-web documentation
+    ./manage.py syncdb
     ./manage.py runserver
 
 #### Note
