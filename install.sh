@@ -108,7 +108,7 @@ if [ "@$UPDATE" = "@true" ]; then
         rsync -rt --delete $INSTALL_SRC/ "$REPO_PATH"
         # ^ ALSO happens further up if not UPDATE!
         code=$?
-        if [ $code -ne 0 ]; then echo "  FAILED"; exit $code; else echo "  OK"; fi
+        if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
         #if [ $code -ne 0 ]; then
         #    echo "  FAILED"
         #    exit $code
@@ -247,21 +247,25 @@ $VENV_PYTHON -m pip install --upgrade pip wheel
 printf "* generating \"$VENV_DIR/.project\"..."
 pwd | tee $VENV_DIR/.project
 code=$?
-if [ $code -ne 0 ]; then echo "  FAILED"; exit $code; else echo "  OK"; fi
+if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
 echo "  * contents: `cat $VENV_DIR/.project`"
 printf "* installing requirements..."
 $VENV_PYTHON -m pip install -r requirements/dev.txt
+code=$?
+if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
 $VENV_PYTHON -m pip install nose
 printf "* 'cd mezzaninja' (from `pwd`)..."
 cd mezzaninja
 code=$?
-if [ $code -ne 0 ]; then echo "  FAILED"; exit $code; else echo "  OK"; fi
+if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
 # add2virtualenv .
 # ^ requires virtualenvwrappr. Instead, do:
 SITE_PACKAGES=`$VENV_PYTHON -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"`
 echo
 if [ "$PYTHON_MAJOR_VERSION" = "2" ]; then
-    echo "* You must export "
+    # echo "* You must export "
+    echo "* generating $SITE_PACKAGES/mezzaninja.pth..."
+    pwd | tee $SITE_PACKAGES/mezzaninja.pth
 else
     echo "* generating $SITE_PACKAGES/mezzaninja.pth..."
     pwd | tee $SITE_PACKAGES/mezzaninja.pth
@@ -316,16 +320,17 @@ TRY_MANAGE_PY="../website/ninja_web/manage.py"
 #    echo "* missing \"$TRY_MANAGE_PY\".."
 #    exit 1
 #fi
+MANAGE_PY_PATH=`realpath $MANAGE_PY`
 export PATH="$PATH:$LESS_BIN_DIR"
 echo "* migrating database..."
 $VENV_PYTHON $MANAGE_PY syncdb  # --migrate
 code=$?
-if [ $code -ne 0 ]; then echo "  FAILED"; exit $code; else echo "  OK"; fi
+if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
 
 echo "* Running '$VENV_PYTHON $MANAGE_PY runserver' in `pwd`..."
 $VENV_PYTHON $MANAGE_PY runserver
 code=$?
-if [ $code -ne 0 ]; then echo "  FAILED"; exit $code; else echo "  OK"; fi
+if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
 echo
 # Create the service file
 # - based on parsoid.service
@@ -367,5 +372,5 @@ cat <<END
 * Next you should do the following as root:
   cp $serverService /etc/systemd/system/
   systemctl enable $SERVICE_NAME
-
+  # If it doesn't work, try changing $MANAGE_PY to $MANAGE_PY_PATH
 END
