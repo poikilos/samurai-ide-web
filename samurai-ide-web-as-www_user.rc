@@ -1,16 +1,14 @@
-echo "This install method is deprecated. Use the non-root samurai-ide-web.rc instead."
-exit 1
-
 webName="samurai"
 REPO_NAME="samurai-ide-web"
 Description="Samurai-IDE Website on Python DJANGO"
 me="$REPO_NAME/install.sh"
 SERVICE_NAME="$REPO_NAME"
 envName="$REPO_NAME"
-websDst="/var/www"
+#websDst="/var/www"
 REPO_USER=poikilos
 REPO_URL="https://github.com/$REPO_USER/$REPO_NAME"
 myPath="`realpath $0`"
+Documentation="https://github.com/$REPO_USER/$REPO_NAME"
 
 if [ "@$SYS_PYTHON" = "@" ]; then
     SYS_PYTHON="python3"
@@ -26,19 +24,21 @@ if [ "@$PYTHON_MAJOR_VERSION" = "@" ]; then
     fi
 fi
 SYS_PYTHON_PATH="`which $SYS_PYTHON`"
-if [ "@$WWW_USER" = "@" ]; then
-    WWW_USER="samurai"
-    echo "* WWW_USER was not set so it has reverted to the default: $WWW_USER"
-fi
-if [ "@$WEB_USER_HOME" = "@" ]; then
-    WEB_USER_HOME="$websDst/$webName"
-    echo "* WEB_USER_HOME was not set so it has reverted to the default: $WEB_USER_HOME"
-fi
+# if [ "@$WWW_USER" = "@" ]; then
+#     WWW_USER="samurai"
+#     echo "* WWW_USER was not set so it has reverted to the default: $WWW_USER"
+# fi
+WWW_USER=$USER
+# if [ "@$WEB_USER_HOME" = "@" ]; then
+#     WEB_USER_HOME="$websDst/$webName"
+#     echo "* WEB_USER_HOME was not set so it has reverted to the default: $WEB_USER_HOME"
+#fi
+WEB_USER_HOME=$HOME
 
 id -u $WWW_USER >& /dev/null
 if [ $? -ne 0 ]; then
-    printf "* adding $WWW_USER (--home $WEB_USER_HOME [$REPO_PATH is the location for the runnable python service. There are no files to be served directly by apache/NGINX/etc])"
-    adduser --disabled-password --gecos "" --home $WEB_USER_HOME $WWW_USER
+    printf "* You must first add $WWW_USER (--home $WEB_USER_HOME [$REPO_PATH is the location for the runnable python service. There are no files to be served directly by apache/NGINX/etc]) such as via:"
+    echo 'adduser --disabled-password --gecos "" --home $WEB_USER_HOME $WWW_USER'
     # --gecos GECOS
     #       Set  the  gecos field for the new entry generated.  adduser will
     #       not ask for finger information if this option is given.
@@ -71,4 +71,3 @@ REPO_PATH="$WEB_USER_HOME/$REPO_NAME"
 VENV_PYTHON="$VENV_DIR/bin/python"
 serverStarter="$WEB_USER_HOME/$SERVICE_NAME-start"
 serverService="$WEB_USER_HOME/$SERVICE_NAME.service"
-Documentation="https://github.com/$REPO_USER/$REPO_NAME"

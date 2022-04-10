@@ -1,5 +1,16 @@
 # samurai-ide-web v3.0
 
+## Project status
+The mezzanine5 branch will start from scratch but try to mimic the original using a new version of DJANGO and mezzanine (See "Old Branches" for details). Mimicking the old branches should help port the features from them to the mezzanine5 branch. If porting the updated DJANGO and mezzanine templates back to the old branches becomes a more viable solution, the default branch will be set back to one of them (See <https://github.com/poikilos/samurai-ide-web> to see which branch is default and use that one).
+
+### Old Branches
+Old branches (all branches other than mezzanine5) have been ported to Python 3 but they don't work due to changes in dependencies.
+Even using older versions of the primary dependencies, branches based on the original ninja-ide-web branches seem to be a lost cause since:
+- Many recent versions of the secondary dependencies (the automatically-calculated dependencies not listed in the requirements/* files) are incompatible with DJANGO or mezzanine. The requirements/* files only list versions for the primary dependencies, not the secondary dependencies. One would think that the primary dependencies would pull the correct versions of secondary dependencies, but they don't (apparently, as there are errors deep within the dependency tree).
+  - If trying to use Python 2 to solve the issue, newer versions of secondary dependencies appearing (the most probable cause) means they are not compatible with Python 2. Furthermore, installing pip at all is difficult (pip for python2 isn't even in Devuan Chimera repositories [Chimera is based on Debian 10 Buster]).
+- The project does not translate well to newer versions of DJANGO and mezzanine (It differs too much from the templates in newer versions of them).
+
+
 ## Website for Samurai-IDE
 The 3rd version of the website is developed alongside Samurai-IDE 3.
 
@@ -28,12 +39,16 @@ If you really really REALLY want to help us, just get to our site (https://samur
     #   error: "The virtual environment was not created successfully because ensurepip is not
     #   available")
     pip install -r requirements/dev.txt
+    # pip install nose
+    # ^ For tests, you must have nose in the venv not use the system's
+    #   nose (which can't access the django in the venv).
 
     # prepare it
     cd mezzaninja
     add2virtualenv .
     export DJANGO_SETTINGS_MODULE="mezzaninja.settings"
-    ln -s settings/dev.py settings/active.py
+    # ln -s settings/dev.py settings/active.py
+    cp settings/dev.py settings/active.py
     ./manage.py syncdb --migrate
     ./manage.py runserver
 
@@ -55,3 +70,12 @@ It's simple:
     `export PATH="$PATH:node_modules/less/bin"`
 
 3) Done. Was simple or what?
+
+
+### Run tests
+Requires
+- Do the "You want to tune up the CSS" steps above.
+- Do the optional step to install nose in the install steps further up.
+
+Use the one from the venv such as:
+~/.virtualenvs/samurai-ide-web/bin/nosetests
