@@ -1,0 +1,92 @@
+webName="samurai"
+REPO_NAME="samurai-ide-web"
+Description="Samurai-IDE Website on Python DJANGO"
+SERVICE_NAME="$REPO_NAME"
+me="samurai-ide-web.rc"
+envName="$REPO_NAME"
+#websDst="/var/www"
+REPO_USER=poikilos
+REPO_URL="https://github.com/$REPO_USER/$REPO_NAME"
+myPath="`realpath $0`"
+#MORE_SETTINGS="$HOME/.config/samurai-ide-web"
+#mkdir -p "$MORE_SETTINGS"
+Documentation="https://github.com/$REPO_USER/$REPO_NAME"
+
+if [ "@$SYS_PYTHON" = "@" ]; then
+    SYS_PYTHON="python3"
+    echo "* SYS_PYTHON was not set so it has reverted to the default: $SYS_PYTHON"
+fi
+if [ "@$PYTHON_MAJOR_VERSION" = "@" ]; then
+    # if [ "$SYS_PYTHON" = "python2" ]; then
+    #     PYTHON_MAJOR_VERSION=2
+    #     echo "* PYTHON_MAJOR_VERSION was not set so it defaulted to the detected: $PYTHON_MAJOR_VERSION"
+    # else
+    #     PYTHON_MAJOR_VERSION=3
+    #     echo "* PYTHON_MAJOR_VERSION was not set so it defaulted to: $PYTHON_MAJOR_VERSION"
+    # fi
+    PYTHON_MAJOR_VERSION=`$SYS_PYTHON -c 'from __future__ import print_function; import sys; print(sys.version_info.major)'`
+fi
+SYS_PYTHON_PATH="`which $SYS_PYTHON`"
+
+if [ "$EUID" -eq 0 ]; then
+    echo "WARNING: Running as root is not recommended."
+    echo "Press Ctrl+C within 5 seconds or $me will install as root!"
+    echo "5..."
+    sleep 1
+    echo "4..."
+    sleep 1
+    echo "3..."
+    sleep 1
+    echo "2..."
+    sleep 1
+    echo "1..."
+    sleep 1
+fi
+
+# if [ "@$WWW_USER" = "@" ]; then
+#     WWW_USER="samurai"
+#     echo "* WWW_USER was not set so it has reverted to the default: $WWW_USER"
+# fi
+WWW_USER=$USER
+# if [ "@$WEB_USER_HOME" = "@" ]; then
+#     WEB_USER_HOME="$websDst/$webName"
+#     echo "* WEB_USER_HOME was not set so it has reverted to the default: $WEB_USER_HOME"
+#fi
+WEB_USER_HOME=$HOME
+
+id -u $WWW_USER >& /dev/null
+if [ $? -ne 0 ]; then
+    printf "* You must first add $WWW_USER (--home $WEB_USER_HOME [$REPO_PATH is the location for the runnable python service. There are no files to be served directly by apache/NGINX/etc]) such as via:"
+    echo 'adduser --disabled-password --gecos "" --home $WEB_USER_HOME $WWW_USER'
+    # --gecos GECOS
+    #       Set  the  gecos field for the new entry generated.  adduser will
+    #       not ask for finger information if this option is given.
+    # ^ non-interactive user creation (doesn't ask for full name, room
+    #   number, etc) <https://en.wikipedia.org/wiki/Gecos_field>.
+    if [ $? -ne 0 ]; then
+        echo "FAILED (run the script as root)"
+        exit 1
+    else
+        echo "OK"
+    fi
+else
+    echo "  * The user already exists and will be used."
+fi
+
+if [ "@$WEB_USER_GROUP" = "@" ]; then
+    WEB_USER_GROUP=`id -Gn $WWW_USER`
+    if [ $? -ne 0 ]; then
+        echo "Error: The user \"$WWW_USER\" must not exist yet (The group cannot be determined)"
+        exit 1
+    fi
+    echo "* WEB_USER_GROUP was not set so it has reverted to the detected one: $WEB_USER_GROUP"
+fi
+
+
+VENVS_DIR="$WEB_USER_HOME/.virtualenvs"
+VENV_DIR="$VENVS_DIR/$envName"
+# deluser $WWW_USER
+REPO_PATH="$WEB_USER_HOME/$REPO_NAME"
+VENV_PYTHON="$VENV_DIR/bin/python"
+serverStarter="$WEB_USER_HOME/$SERVICE_NAME-start"
+serverService="$WEB_USER_HOME/$SERVICE_NAME.service"
