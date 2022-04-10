@@ -403,4 +403,5 @@ def run_checkers(global_settings):
         raise ImproperlyConfigured("Please define explicitly LESS_EXECUTABLE")
 
     if (not os.path.isfile(LESS_EXECUTABLE)) or  (not os.access(LESS_EXECUTABLE, os.X_OK)):
-        raise ImproperlyConfigured("Less binary does not exist or is not executable")
+        raise ImproperlyConfigured("Less binary does not exist or is not executable: {}"
+                                   "".format(LESS_EXECUTABLE))
