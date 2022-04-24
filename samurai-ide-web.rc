@@ -70,7 +70,7 @@ if [ $? -ne 0 ]; then
         echo "OK"
     fi
 else
-    echo "  * The user already exists and will be used."
+    echo "  * The WWW_USER named $WWW_USER already exists and will be used."
 fi
 
 if [ "@$WEB_USER_GROUP" = "@" ]; then

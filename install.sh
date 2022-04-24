@@ -24,24 +24,6 @@ if [ $? -ne 0 ]; then
 fi
 me="$REPO_NAME/install.sh"
 
-# if [ ! -f "`command -v less`" ]; then
-# ^ NOT RELIABLE (less has a different meaning on linux)!
-printf "* finding a node package manager..."
-if [ -f "`command -v yarn`" ]; then
-    NPM="yarn"
-    NPM_INSTALL="$NPM add"
-elif [ -f "`command -v yarnpkg`" ]; then
-    NPM="yarnpkg"
-    NPM_INSTALL="$NPM add"
-elif [ -f "`command -v npm`" ]; then
-    NPM="npm"
-    NPM_INSTALL="$NPM install"
-else
-    echo "Error: less is required, but there is no npm nor yarn nor yarnpkg. Run deps.sh as root first."
-    exit 1
-fi
-echo "OK (using $NPM)"
-# fi
 
 
 # if [ $UID -ne 0 ]; then
@@ -59,6 +41,7 @@ if [ ! -d "$REPO_PATH" ]; then
         echo "* installing $INSTALL_SRC to $REPO_PATH..."
         rsync -rt $INSTALL_SRC/ "$REPO_PATH"
         # ^ ALSO happens below if UPDATE!
+        # ^ This is safe since it only happens if the dir DOES NOT EXIST.
     fi
     if [ $? -ne 0 ]; then
         echo "  * 'git clone $REPO_URL \"$REPO_PATH\"' failed."
@@ -82,7 +65,7 @@ else
     exit $code
 fi
 # NOTE: Do not set PYTHON_MAJOR_VERSION directly. Instead, set SYS_PYTHON (the RC file above will set PYTHON_MAJOR_VERSION).
-#if [ "$PYTHON_MAJOR_VERSION" = "2" ]; then
+if [ "$PYTHON_MAJOR_VERSION" = "2" ]; then
     #echo "* WARNING: Switching to develop-python2 branch since PYTHON_MAJOR_VERSION=2"
 
     ## git switch master-python2
@@ -98,12 +81,24 @@ fi
     ##   #6](https://github.com/poikilos/samurai-ide-web/issues/6)
 
     #git checkout -b master-python2 origin/master-python2
-
-#fi
+    cat <<END
+Error: The program now requires Python 3. Though the old
+requirements.txt listed correct versions of high-level dependencies,
+the low-level dependencies still fail somehow. Python 2 is unsupported
+by the CPython project, so issues like this can probably be expected.
+Use Python 3 and everything should work.
+END
+    exit 1
+fi
 if [ "@$UPDATE" = "@true" ]; then
     if [ -z "$INSTALL_SRC" ]; then
         git pull --verbose
     else
+        if [ "@$SAMURAI_FORCE_UPDATE" != "@true" ]; then
+            echo "* updating $REPO_PATH from $INSTALL_SRC destructively is unsupported (It is only for testing)."
+            echo "  * set SAMURAI_FORCE_UPDATE=true to force this operation."
+            exit 1
+        fi
         echo "* updating $REPO_PATH from $INSTALL_SRC DESTRUCTIVELY..."
         rsync -rt --delete $INSTALL_SRC/ "$REPO_PATH"
         # ^ ALSO happens further up if not UPDATE!
@@ -186,6 +181,9 @@ fi
 if [ ! -d "$VENV_DIR" ]; then
 
     if [ "$PYTHON_MAJOR_VERSION" = "2" ]; then
+        echo "Error: Python 2 is not supported anymore."
+        echo "Error: The script should terminate further up when PYTHON_MAJOR_VERSION is 2."
+        exit 1
         virtualenv -h >& /dev/null
         code=$?
         if [ $code -ne 0 ]; then
@@ -263,15 +261,21 @@ pwd | tee $VENV_DIR/.project
 code=$?
 if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
 echo "  * contents: `cat $VENV_DIR/.project`"
-printf "* installing requirements..."
-$VENV_PYTHON -m pip install -r requirements/dev.txt
-code=$?
-if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
+
+#printf "* installing requirements..."
+#$VENV_PYTHON -m pip install -r requirements/dev.txt
+#code=$?
+#if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
+echo "* skipping requirements/ folder (This is the mezzanine5 rewrite, so what is required is to be determined)."
+
 $VENV_PYTHON -m pip install nose
-printf "* 'cd mezzaninja' (from `pwd`)..."
-cd mezzaninja
-code=$?
-if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
+
+#printf "* 'cd mezzaninja' (from `pwd`)..."
+#cd mezzaninja
+#code=$?
+#if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
+echo "* skipping ninja dir since this is the python rewrite"
+
 # add2virtualenv .
 # ^ requires virtualenvwrappr. Instead, do:
 SITE_PACKAGES=`$VENV_PYTHON -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"`
@@ -281,13 +285,16 @@ if [ "$PYTHON_MAJOR_VERSION" = "2" ]; then
     echo "* generating $SITE_PACKAGES/mezzaninja.pth..."
     pwd | tee $SITE_PACKAGES/mezzaninja.pth
 else
-    echo "* generating $SITE_PACKAGES/mezzaninja.pth..."
-    pwd | tee $SITE_PACKAGES/mezzaninja.pth
+    #echo "* generating $SITE_PACKAGES/mezzaninja.pth..."
+    #pwd | tee $SITE_PACKAGES/mezzaninja.pth
     # ^ The directory in the pth file gets appended to PYTHON_PATH automatically.
     # ^ doesn't seem to work in python2
+    echo "* skipping .pth file generation since this is the mezzanine5 rewrite"
 fi
 
 if [ "$PYTHON_MAJOR_VERSION" = "2" ]; then
+    echo "Error: Python 2 doesn't work with this project (even the upstream project) anymore."
+    exit 1
     # pip install django_compressor==2.4
     echo "* running 'pip install django-appconf==1.0.2' for Python 2..."
     pip install django-appconf==1.0.2
@@ -300,6 +307,26 @@ if [ -f "$tmpInst" ]; then
     rm $tmpInst
     # ^ only for root version of install script, so remove it
 fi
+
+# if [ ! -f "`command -v less`" ]; then
+# ^ NOT RELIABLE (less has a different meaning on linux)!
+printf "* finding a node package manager..."
+if [ -f "`command -v yarn`" ]; then
+    NPM="yarn"
+    NPM_INSTALL="$NPM add"
+elif [ -f "`command -v yarnpkg`" ]; then
+    NPM="yarnpkg"
+    NPM_INSTALL="$NPM add"
+elif [ -f "`command -v npm`" ]; then
+    NPM="npm"
+    NPM_INSTALL="$NPM install"
+else
+    echo "Error: less is required, but there is no npm nor yarn nor yarnpkg. Run deps.sh as root first."
+    exit 1
+fi
+echo "OK (using $NPM)"
+# fi
+
 
 export DJANGO_SETTINGS_MODULE="mezzaninja.settings"
 # ln -s settings/dev.py settings/active.py  # FAILS due to relative path
@@ -338,15 +365,18 @@ MANAGE_PY=./manage.py
 MANAGE_PY_PATH=`realpath $MANAGE_PY`
 export PATH="$PATH:$LESS_BIN_DIR"
 echo "* migrating database..."
-$VENV_PYTHON $MANAGE_PY syncdb  --migrate
+# $VENV_PYTHON $MANAGE_PY syncdb  --migrate
+$VENV_PYTHON manage.py createdb --noinput
 code=$?
 if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
 
-echo "* Running '$VENV_PYTHON $MANAGE_PY runserver' in `pwd`..."
-$VENV_PYTHON $MANAGE_PY runserver
-code=$?
-if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
-echo
+# echo "* Running '$VENV_PYTHON $MANAGE_PY runserver' in `pwd`..."
+# $VENV_PYTHON $MANAGE_PY runserver
+# code=$?
+# if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
+# echo
+echo "* skipping server run (test via: '. $VENV_DIR/bin/activate' then 'python3 manage.py runserver' -- See mezzanine documentation at https://mezzanine.readthedocs.io/en/latest/overview.html#installation)"
+
 # Create the service file
 # - based on parsoid.service
 # - For WorkingDirectory and Environment, see <http://0pointer.de/public/systemd-man/systemd.exec.html#Environment=>.
@@ -384,7 +414,7 @@ END
 
 cat <<END
 
-* Next you should do the following as root:
+* Next you should do the following as root (Don't worry, the service will run as $WWW_USER and as group $WWW_GROUP):
   cp $serverService /etc/systemd/system/
   systemctl enable $SERVICE_NAME
   # If it doesn't work, try changing $MANAGE_PY to $MANAGE_PY_PATH
