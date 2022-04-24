@@ -151,7 +151,7 @@ if [ -d "$BAD_DB" ]; then
     rm -rf "$BAD_DB"
     if [ $? -ne 0 ]; then echo "FAILED"; exit 1; else echo "OK"; fi
 fi
-BAD_DB=$REPO_PATH/mezzninja/dev.db
+BAD_DB=$REPO_PATH/dev.db
 if [ -d "$BAD_DB" ]; then
     printf "* removing old \"$BAD_DB\"..."
     rm -rf "$BAD_DB"
@@ -336,7 +336,7 @@ echo "OK (using $NPM)"
 # fi
 
 
-export DJANGO_SETTINGS_MODULE="mezzaninja.settings"
+export DJANGO_SETTINGS_MODULE="settings"
 # ln -s settings/dev.py settings/active.py  # FAILS due to relative path
 echo "* installing `realpath settings/dev.py` as `pwd`/settings/active.py..."
 rm settings/active.py
@@ -370,20 +370,6 @@ MANAGE_PY=./manage.py
 #    echo "* missing \"$TRY_MANAGE_PY\".."
 #    exit 1
 #fi
-MANAGE_PY_PATH=`realpath $MANAGE_PY`
-export PATH="$PATH:$LESS_BIN_DIR"
-echo "* migrating database..."
-# $VENV_PYTHON $MANAGE_PY syncdb  --migrate
-$VENV_PYTHON manage.py createdb --noinput
-code=$?
-if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
-
-# echo "* Running '$VENV_PYTHON $MANAGE_PY runserver' in `pwd`..."
-# $VENV_PYTHON $MANAGE_PY runserver
-# code=$?
-# if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
-# echo
-echo "* skipping server run (test via: '. $VENV_DIR/bin/activate' then 'python3 manage.py runserver' -- See mezzanine documentation at https://mezzanine.readthedocs.io/en/latest/overview.html#installation)"
 
 # Create the service file
 # - based on parsoid.service
@@ -406,7 +392,7 @@ Environment="DJANGO_SETTINGS_MODULE=mezzaninja.settings"
 Type=simple
 User=$WWW_USER
 Group=$WEB_USER_GROUP
-WorkingDirectory=$REPO_PATH/mezzninja
+WorkingDirectory=$REPO_PATH
 ExecStart=$VENV_PYTHON $MANAGE_PY runserver
 KillMode=process
 Restart=on-failure
@@ -414,6 +400,32 @@ PrivateTmp=true
 StandardOutput=syslog
 
 END
+
+cat <<END
+
+* Next you should do the following as root (Don't worry, the service will run as $WWW_USER and as group $WWW_GROUP):
+  cp $serverService /etc/systemd/system/
+  systemctl enable $SERVICE_NAME
+  # If it doesn't work, try changing $MANAGE_PY to $MANAGE_PY_PATH
+
+END
+
+
+MANAGE_PY_PATH=`realpath $MANAGE_PY`
+export PATH="$PATH:$LESS_BIN_DIR"
+# echo "* migrating database..."
+# $VENV_PYTHON $MANAGE_PY syncdb  --migrate
+# $VENV_PYTHON manage.py createdb --noinput
+# code=$?
+# if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
+echo "* skipping running migration due to running mezzanine 5 rewrite (already did migration)"
+
+# echo "* Running '$VENV_PYTHON $MANAGE_PY runserver' in `pwd`..."
+# $VENV_PYTHON $MANAGE_PY runserver
+# code=$?
+# if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
+# echo
+echo "* skipping server run (test via: '. $VENV_DIR/bin/activate' then 'python3 manage.py runserver' -- See mezzanine documentation at https://mezzanine.readthedocs.io/en/latest/overview.html#installation)"
 
 
 # To see any files that should be in .gitignore at this point if only above was done:

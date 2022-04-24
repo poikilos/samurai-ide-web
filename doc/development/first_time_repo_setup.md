@@ -46,3 +46,4 @@ All of the edits made to the database and gallery do not affect the repo.
   - samurai/local_settings.py
   - media
   - the db file
+- Adjust ALLOWED_HOSTS in samurai/local_settings.py to match your server's domain (not IP address usually, unless you want to allow that).
