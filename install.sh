@@ -393,7 +393,7 @@ WantedBy=multi-user.target
 #Environment="DJANGO_SETTINGS_MODULE=settings"
 Type=simple
 User=$WWW_USER
-Group=$WEB_USER_GROUP
+Group=$WWW_GROUP
 WorkingDirectory=$REPO_PATH
 ExecStart=$VENV_PYTHON $MANAGE_PY runserver
 KillMode=process
@@ -437,13 +437,37 @@ echo "* skipping server run (test via: '. $VENV_DIR/bin/activate' then '$VENV_PY
 cat <<END
 
 * Next you should do the following as root (Don't worry, the service will run as $WWW_USER and as group $WWW_GROUP):
-  cp $serverService /etc/systemd/system/
-  systemctl enable $SERVICE_NAME
+  sudo cp $serverService /etc/systemd/system/
+  sudo systemctl daemon-reload
+  sudo systemctl enable $SERVICE_NAME
   # If it doesn't work, try changing $MANAGE_PY to $MANAGE_PY_PATH
+END
 
+if [ ! -d "/run/$WWW_USER" ]; then
+    cat <<END
 * And make a socket directory:
 
 sudo mkdir /run/$WWW_USER
 sudo chown -R $WWW_USER:$WWW_GROUP /run/$WWW_USER
-
 END
+else
+    if [ -f "/run/$WWW_USER/permtest.txt" ]; then
+        rm "/run/$WWW_USER/permtest.txt"
+        if [ $? -ne 0 ]; then
+            echo "* You must set the permissions of the socket directory:"
+            echo "  sudo chown -R $WWW_USER:$WWW_GROUP /run/$WWW_USER"
+        fi
+        touch "/run/$WWW_USER/permtest.txt"
+        if [ $? -ne 0 ]; then
+            echo "* You must set the permissions of the socket directory:"
+            echo "  sudo chown -R $WWW_USER:$WWW_GROUP /run/$WWW_USER"
+        #else
+        #    rm "/run/$WWW_USER/permtest.txt"
+        #    if [ $? -ne 0 ]; then
+        #        echo "* You must set the permissions of the socket directory:"
+        #        echo "  sudo chown -R $WWW_USER:$WWW_GROUP /run/$WWW_USER"
+        #    fi
+        fi
+    fi
+fi
+

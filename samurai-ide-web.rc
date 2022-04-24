@@ -53,16 +53,7 @@ fi
 #     echo "* WWW_USER was not set so it has reverted to the default: $WWW_USER"
 # fi
 WWW_USER=$USER
-# WWW_EFFECTIVE_GROUP_ID=`id $USER -g`
-# -g: get only the effective group of the user
-if [ "@$WWW_GROUP" = "@" ]; then
-    WWW_GROUP=`id $USER -g -n`
-fi
-# -n: get a name
-# if [ "@$WEB_USER_HOME" = "@" ]; then
-#     WEB_USER_HOME="$websDst/$webName"
-#     echo "* WEB_USER_HOME was not set so it has reverted to the default: $WEB_USER_HOME"
-#fi
+# WWW_GROUP is further down
 WEB_USER_HOME=$HOME
 
 id -u $WWW_USER >& /dev/null
@@ -84,14 +75,24 @@ else
     echo "  * The WWW_USER named $WWW_USER already exists and will be used."
 fi
 
-if [ "@$WEB_USER_GROUP" = "@" ]; then
-    WEB_USER_GROUP=`id -Gn $WWW_USER`
+if [ "@$WWW_GROUP" = "@" ]; then
+    WWW_GROUP=`id -Gn $WWW_USER`
     if [ $? -ne 0 ]; then
         echo "Error: The user \"$WWW_USER\" must not exist yet (The group cannot be determined)"
         exit 1
     fi
-    echo "* WEB_USER_GROUP was not set so it has reverted to the detected one: $WEB_USER_GROUP"
+    echo "* WWW_GROUP was not set so it has reverted to the detected one: $WWW_GROUP"
 fi
+# WWW_EFFECTIVE_GROUP_ID=`id $USER -g`
+# -g: get only the effective group of the user
+#if [ "@$WWW_GROUP" = "@" ]; then
+#    WWW_GROUP=`id $USER -g -n`
+#fi
+# -n: get a name
+# if [ "@$WEB_USER_HOME" = "@" ]; then
+#     WEB_USER_HOME="$websDst/$webName"
+#     echo "* WEB_USER_HOME was not set so it has reverted to the default: $WEB_USER_HOME"
+#fi
 
 
 VENVS_DIR="$WEB_USER_HOME/.virtualenvs"
