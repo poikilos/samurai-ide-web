@@ -30,13 +30,36 @@ python3 setup.py install
 # ^ Ignore node.js errors unless "LESS" is implemented or node becomes necessary for other reasons.
 ```
 
+You must have Python 2.8 to use the latest DJANGO since that uses the `:=` operator.
+
+You can install it as python3.8 using the `altinstall` as desribed below:
+
+```
+sudo apt update
+sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev liblzma-dev
+curl -O https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz
+tar -xf Python-3.8.2.tar.xz
+cd Python-3.8.2
+./configure --enable-optimizations --enable-loadable-sqlite-extensions \
+    --enable-shared
+# ^ one commenter says to add --enable-shared (builds libpython)
+make -j `nproc`
+sudo make altinstall
+
+
+```
+-from <https://stackoverflow.com/a/62831268> which says the steps are from <https://linuxize.com/post/how-to-install-python-3-8-on-debian-10/>.
+
 ### Move to another server
 - Do all install steps then copy the following to the server:
   - samurai/local_settings.py
   - media/
   - the db file
-- Adjust in samurai/local_settings.py
-  - ensure DEBUG is false.
+- Adjust samurai/local_settings.py:
+  - Set ALLOWED_HOSTS to match your server's domain (not IP address usually, unless you want to allow that).
+  - ensure `DEBUG = false`.
+- Change the port by adding a port number to the end of the generated service file's Exec line (after `runserver`)
+
 
 ### Run
 Create a service as described in the install.sh file. You can also read

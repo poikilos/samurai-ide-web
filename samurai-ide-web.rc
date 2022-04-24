@@ -1,11 +1,11 @@
 webName="samurai"
 REPO_NAME="samurai-ide-web"
-Description="Samurai-IDE Website on Python DJANGO"
+Description="Samurai-IDE Mezzanine Website on Python DJANGO"
 SERVICE_NAME="$REPO_NAME"
 me="samurai-ide-web.rc"
 envName="$REPO_NAME"
 #websDst="/var/www"
-REPO_USER=poikilos
+REPO_USER=samurai-ide
 REPO_URL="https://github.com/$REPO_USER/$REPO_NAME"
 myPath="`realpath $0`"
 #MORE_SETTINGS="$HOME/.config/samurai-ide-web"
@@ -13,8 +13,13 @@ myPath="`realpath $0`"
 Documentation="https://github.com/$REPO_USER/$REPO_NAME"
 
 if [ "@$SYS_PYTHON" = "@" ]; then
-    SYS_PYTHON="python3"
-    echo "* SYS_PYTHON was not set so it has reverted to the default: $SYS_PYTHON"
+    if [ ! -f "`command -v python3.8`" ]; then
+        SYS_PYTHON="python3"
+        echo "* SYS_PYTHON was not set so it has reverted to the default: $SYS_PYTHON"
+    else
+        SYS_PYTHON="python3.8"
+        echo "* SYS_PYTHON was not set so it has reverted to the detected altinstall version: $SYS_PYTHON"
+    fi
 fi
 if [ "@$PYTHON_MAJOR_VERSION" = "@" ]; then
     # if [ "$SYS_PYTHON" = "python2" ]; then

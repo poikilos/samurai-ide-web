@@ -388,7 +388,7 @@ After=local-fs.target network.target
 WantedBy=multi-user.target
 
 [Service]
-Environment="DJANGO_SETTINGS_MODULE=mezzaninja.settings"
+#Environment="DJANGO_SETTINGS_MODULE=settings"
 Type=simple
 User=$WWW_USER
 Group=$WEB_USER_GROUP
@@ -425,7 +425,7 @@ echo "* skipping running migration due to running mezzanine 5 rewrite (already d
 # code=$?
 # if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
 # echo
-echo "* skipping server run (test via: '. $VENV_DIR/bin/activate' then 'python3 manage.py runserver' -- See mezzanine documentation at https://mezzanine.readthedocs.io/en/latest/overview.html#installation)"
+echo "* skipping server run (test via: '. $VENV_DIR/bin/activate' then '$VENV_PYTHON manage.py runserver' -- See mezzanine documentation at https://mezzanine.readthedocs.io/en/latest/overview.html#installation)"
 
 
 # To see any files that should be in .gitignore at this point if only above was done:
