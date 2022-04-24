@@ -78,7 +78,7 @@ if [ "$PYTHON_MAJOR_VERSION" = "2" ]; then
     ## git checkout -b develop-python2 origin/develop-python2
     ## ^ fails to run: See
     ##   [develop-python2 branch fails to run
-    ##   #6](https://github.com/poikilos/samurai-ide-web/issues/6)
+    ##   #6](https://github.com/samurai-ide/samurai-ide-web/issues/6)
 
     #git checkout -b master-python2 origin/master-python2
     cat <<END
@@ -131,7 +131,7 @@ if [ -d "$REPO_PATH/node_modules" ]; then
     if [ $? -ne 0 ]; then echo "FAILED"; exit 1; else echo "OK"; fi
 fi
 # ^ prevent forcing the node_modules dir to prevent the error:
-#      File "/home/owner/samurai-ide-web/mezzaninja/settings/base.py", line 407, in run_checkers
+#      File "[redacted]/samurai-ide-web/mezzaninja/settings/base.py", line 407, in run_checkers
 #        "".format(LESS_EXECUTABLE))
 #    settings.base.ImproperlyConfigured: Less binary does not exist or is not executable: node_modules/less/bin/lessc"
 YARN_LEFTOVERS="`find $REPO_PATH -name '.yarn*'`"
@@ -335,7 +335,9 @@ fi
 echo "OK (using $NPM)"
 # fi
 
-
+cd "$REPO_PATH"
+code=$?
+if [ $code -ne 0 ]; then exit $code; fi
 export DJANGO_SETTINGS_MODULE="settings"
 # ln -s settings/dev.py settings/active.py  # FAILS due to relative path
 echo "* installing `realpath settings/dev.py` as `pwd`/settings/active.py..."
@@ -438,4 +440,10 @@ cat <<END
   cp $serverService /etc/systemd/system/
   systemctl enable $SERVICE_NAME
   # If it doesn't work, try changing $MANAGE_PY to $MANAGE_PY_PATH
+
+* And make a socket directory:
+
+sudo mkdir /run/$WWW_USER
+sudo chown -R $WWW_USER:$WWW_GROUP /run/$WWW_USER
+
 END

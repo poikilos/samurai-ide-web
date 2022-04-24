@@ -23,20 +23,24 @@ The default content of Home is (after converted to markdown for the purposes of 
 > - [Deploying to a production server](http://mezzanine.jupo.org/docs/deployment.html)
 
 ## Install
-Install by cloning the repo then running:
+Create and switch to a new user:
 ```
-python3 setup.py install
-./install.sh
-# ^ Ignore node.js errors unless "LESS" is implemented or node becomes necessary for other reasons.
+sudo useradd -m -d /var/www/samurai samurai
+sudo passwd samurai
+# Enter a strong password.
+sudo -u samurai bash
+cd
 ```
 
 You must have Python 2.8 to use the latest DJANGO since that uses the `:=` operator.
 
 You can install it as python3.8 using the `altinstall` as desribed below:
 
+Based on <https://stackoverflow.com/a/62831268> which says the steps are from <https://linuxize.com/post/how-to-install-python-3-8-on-debian-10/>:
+
 ```
 sudo apt update
-sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev liblzma-dev
+sudo apt install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev liblzma-dev
 curl -O https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz
 tar -xf Python-3.8.2.tar.xz
 cd Python-3.8.2
@@ -45,10 +49,20 @@ cd Python-3.8.2
 # ^ one commenter says to add --enable-shared (builds libpython)
 make -j `nproc`
 sudo make altinstall
-
+sudo ldconfig
+# ^ ldconfig prevents an error related to --enable-shared: "python3.8: error while loading shared libraries: libpython3.8.so.1.0: cannot open shared object file: No such file or directory"
 
 ```
--from <https://stackoverflow.com/a/62831268> which says the steps are from <https://linuxize.com/post/how-to-install-python-3-8-on-debian-10/>.
+
+Install by cloning the repo then running setup.py:
+```
+git clone https://github.com/samurai-ide/samurai-ide-web.git /var/www/samurai/samurai-ide-web
+cd /var/www/samurai/samurai-ide-web
+python3 setup.py install
+./install.sh
+# ^ Ignore node.js errors unless "LESS" is implemented or node becomes necessary for other reasons.
+```
+
 
 ### Move to another server
 - Do all install steps then copy the following to the server:
