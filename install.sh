@@ -148,6 +148,20 @@ if [ ! -z "$YARN_LEFTOVERS" ]; then
     exit 1
 fi
 
+BAD_DB=$REPO_PATH/dev.db
+if [ -d "$BAD_DB" ]; then
+    printf "* removing old \"$BAD_DB\"..."
+    rm -rf "$BAD_DB"
+    if [ $? -ne 0 ]; then echo "FAILED"; exit 1; else echo "OK"; fi
+fi
+BAD_DB=$REPO_PATH/mezzninja/dev.db
+if [ -d "$BAD_DB" ]; then
+    printf "* removing old \"$BAD_DB\"..."
+    rm -rf "$BAD_DB"
+    if [ $? -ne 0 ]; then echo "FAILED"; exit 1; else echo "OK"; fi
+fi
+
+
 # mkvirtualenv samuraiweb
 # ^ from ninja-ide-web readme, but not great
 
@@ -312,7 +326,8 @@ else
     exit 1
 fi
 MANAGE_PY=./manage.py
-TRY_MANAGE_PY="../website/ninja_web/manage.py"
+#TRY_MANAGE_PY="../website/ninja_web/manage.py"
+# ^ tries to use execute_manager from django <1.6
 #if [ -f "$TRY_MANAGE_PY" ]; then
 #    echo "* using \"$TRY_MANAGE_PY\"..."
 #    MANAGE_PY="$TRY_MANAGE_PY"
@@ -323,7 +338,7 @@ TRY_MANAGE_PY="../website/ninja_web/manage.py"
 MANAGE_PY_PATH=`realpath $MANAGE_PY`
 export PATH="$PATH:$LESS_BIN_DIR"
 echo "* migrating database..."
-$VENV_PYTHON $MANAGE_PY syncdb  # --migrate
+$VENV_PYTHON $MANAGE_PY syncdb  --migrate
 code=$?
 if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
 

@@ -88,6 +88,11 @@ ninja_ide.db
 ninjaweb
 website/ninja_web/media/plugin_files/
 
+### files from an incorrect or testing configuration (should be in mezz*)
+/node_modules/
+/yarn.lock
+/package.json
+
 ### files generated during install
 ninja_ide.db
 ninjaweb
@@ -100,6 +105,4 @@ version/bin/python
 version/bin/python3
 version/lib64
 version/pyvenv.cfg
-/node_modules/
-/yarn.lock
-/package.json
+
