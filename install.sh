@@ -93,6 +93,8 @@ fi
 if [ "@$UPDATE" = "@true" ]; then
     if [ -z "$INSTALL_SRC" ]; then
         git pull --verbose
+    elif [ "@$INSTALL_SRC" = "@$REPO_PATH" ]; then
+        echo "* skipping install and pull since REPO_PATH and INSTALL_SRC are both $REPO_PATH"
     else
         if [ "@$SAMURAI_FORCE_UPDATE" != "@true" ]; then
             echo "* updating $REPO_PATH from $INSTALL_SRC destructively is unsupported (It is only for testing)."
@@ -267,6 +269,12 @@ echo "  * contents: `cat $VENV_DIR/.project`"
 #code=$?
 #if [ $code -ne 0 ]; then echo "FAILED"; exit $code; else echo "OK"; fi
 echo "* skipping requirements/ folder (This is the mezzanine5 rewrite, so what is required is to be determined)."
+
+echo "* Installing requirements using the mezzanine repo's setup instead..."
+mkdir -p ~/Downloads/git/stephenmcd
+git clone https://github.com/stephenmcd/mezzanine ~/Downloads/git/stephenmcd/mezzanine
+cd ~/Downloads/git/stephenmcd/mezzanine
+$VENV_PYTHON setup.py install
 
 $VENV_PYTHON -m pip install nose
 

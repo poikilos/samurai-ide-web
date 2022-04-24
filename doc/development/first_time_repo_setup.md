@@ -30,7 +30,7 @@ fi
 # pip install mezzanine
 # ^ Version 5.1.3 errors out when trying to save an edited page.
 mkdir -p ~/Downloads/git/stephenmcd
-git clone https://github.com/stephenmcd/mezzanine ~/Downloads/git/stephenmcd
+git clone https://github.com/stephenmcd/mezzanine ~/Downloads/git/stephenmcd/mezzanine
 cd ~/Downloads/git/stephenmcd/mezzanine
 python setup.py install
 cd "$HOME/tmp"
