@@ -390,7 +390,7 @@ After=local-fs.target network.target
 WantedBy=multi-user.target
 
 [Service]
-#Environment="DJANGO_SETTINGS_MODULE=settings"
+Environment="DJANGO_SETTINGS_MODULE=samurai.settings"
 Type=simple
 User=$WWW_USER
 Group=$WWW_GROUP

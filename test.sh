@@ -27,10 +27,10 @@ if [ $code -eq 0 ]; then
     echo "OK"
 else
     echo "FAILED"
-    if [ ! -f "./mezzaninja/settings/active.py" ]; then
-        echo "* If you see \"No module named active\" above, try:"
-        echo " ln -s `realpath ./mezzaninja/settings/dev.py` `realpath ./mezzaninja/settings/active.py`"
-        echo "  # then try running $0 again."
-    fi
+    #if [ ! -f "./mezzaninja/settings/active.py" ]; then
+    #    echo "* If you see \"No module named active\" above, try:"
+    #    echo " ln -s `realpath ./mezzaninja/settings/dev.py` `realpath ./mezzaninja/settings/active.py`"
+    #    echo "  # then try running $0 again."
+    #fi
     exit $code
 fi

@@ -1,6 +1,6 @@
 webName="samurai"
 REPO_NAME="samurai-ide-web"
-Description="Samurai-IDE Mezzanine Website on Python DJANGO"
+Description="Samurai IDE Mezzanine Website on Python DJANGO"
 SERVICE_NAME="$REPO_NAME"
 me="samurai-ide-web.rc"
 envName="$REPO_NAME"

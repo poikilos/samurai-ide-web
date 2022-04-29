@@ -33,6 +33,7 @@ mkdir -p ~/Downloads/git/stephenmcd
 git clone https://github.com/stephenmcd/mezzanine ~/Downloads/git/stephenmcd/mezzanine
 cd ~/Downloads/git/stephenmcd/mezzanine
 python setup.py install
+pip install uwsgi  # as per https://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html
 cd "$HOME/tmp"
 mezzanine-project samurai
 cd samurai
